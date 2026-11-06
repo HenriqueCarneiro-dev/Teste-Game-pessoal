@@ -1,134 +1,156 @@
 # VolTerra
 
-Jogo de terminal em C de gerenciamento de uma usina elétrica nacional.
+Jogo de gerenciamento de uma rede elétrica nacional, feito em C com [raylib](https://www.raylib.com/).
 
 ## Visão Geral
 
-VolTerra é um jogo de terminal desenvolvido em linguagem C com foco na gestão de uma usina elétrica nacional. O jogador atua como operador da usina e precisa distribuir uma cota finita de energia entre as regiões do país, mantendo a rede estável ao longo de cinco noites de operação.
+Em VolTerra você opera a rede elétrica do Brasil. Cada região do país tem uma bateria que sobe e desce conforme a produção e o consumo de energia. Seu trabalho é manter todas as regiões numa faixa segura enquanto eventos climáticos e picos de demanda tentam desequilibrar o sistema.
 
-A proposta combina estratégia, tomada de decisão e gerenciamento de recursos em tempo real. O painel de controle usa chaves simples de ligar/desligar para cada região. Como a cota da usina não cobre todas as regiões ao mesmo tempo, o jogador precisa fazer um rodízio: regiões desligadas entram em alerta e, se a contagem chegar a zero antes de serem religadas, sofrem blackout. A dificuldade cresce a cada noite, com novas regiões entrando na rede e menos tempo de alerta.
+Se uma bateria chega ao limite (apagão ou sobrecarga), você precisa vencer um minigame para estabilizar a região. Falhar custa uma vida. A dificuldade cresce a cada fase, com mais regiões, eventos mais frequentes e alertas mais rápidos.
 
-## Objetivo do Jogo
+## Objetivo
 
-Sobreviver às cinco noites de simulação sem acumular três blackouts, somando o máximo de pontos possível.
+Sobreviver às **5 fases** sem ficar sem vidas, somando o máximo de pontos possível.
 
-Cada região tem um consumo próprio de energia e pode estar em um destes estados: **bloqueada** (ainda não entrou na rede), **abastecida**, **em alerta** ou **em blackout**. Os pontos aumentam enquanto as regiões permanecem abastecidas e há bônus ao completar cada noite. Cada blackout reduz a pontuação. Ao atingir o limite de 3 blackouts, o jogador perde.
+- Cada fase tem **4 dias de 30 segundos**.
+- Você começa com **3 vidas**.
+- Mantenha todas as baterias entre **30% e 80%**.
+- Quem completa as 5 fases **sem perder nenhuma vida** desbloqueia algo especial.
 
-## Regras e Valores
+## Como Jogar
 
-| Item | Valor |
+### Estados da bateria
+
+| Bateria | Situação |
 |---|---|
-| Duração de cada noite | 45 segundos |
-| Número de noites | 5 (completar a quinta é a vitória) |
-| Limite de blackouts | 3 (ao atingir, é derrota) |
-| Cota de energia | 90 MW na noite 1, mais 10 MW a cada noite (130 MW na noite 5) |
-| Tempo de alerta antes do blackout | 14 s na noite 1, menos 2 s por noite (mínimo de 6 s) |
-| Pontos | +10 por região abastecida a cada segundo; −50 por blackout; +100 × número da noite ao concluí-la |
+| 30% a 80% | Estável. Você ganha pontos e o bônus de combo sobe. |
+| Acima de 80% | **Alerta de sobrecarga.** Em 110%, um minigame de sobrecarga dispara. |
+| Abaixo de 30% | **Alerta de apagão.** Em 0%, um minigame de apagão dispara. |
 
-| Região | Consumo | Entra na noite |
+Um cronômetro no mapa mostra quantos segundos faltam para o estouro. Setas verdes indicam sobra de energia na região e setas vermelhas indicam falta.
+
+### Controles
+
+| Ação | Como fazer |
+|---|---|
+| Selecionar uma região | Clicar nela no mapa ou na lista à direita |
+| Aumentar a produção | `W`, seta para cima, roda do mouse ou botão `+` |
+| Diminuir a produção | `S`, seta para baixo, roda do mouse ou botão `-` |
+| Voltar a produção a 100% | `R` ou botão Reset |
+| Apoiar outra região | Segurar o botão do mouse numa região e arrastar até a outra |
+| Pausar | `P` ou `ESC` (a pausa tem o ajuste de volume) |
+| Novo jogo no menu | `ENTER` |
+| Tela cheia / janela | Botão de engrenagem no canto inferior esquerdo |
+
+A produção de cada região pode ser ajustada de 20% a 150%.
+
+**Apoio entre regiões:** o apoio tira 10% da bateria da origem (que precisa ter pelo menos 25%). A região vizinha recebe 8% e uma região distante recebe 5%. Existe um tempo de espera entre um apoio e outro.
+
+### Regiões por fase
+
+| Fase | Regiões ativas |
+|---|---|
+| 1 | Sudeste, Nordeste, Centro-Oeste (3) |
+| 2 | + Sul (4) |
+| 3 a 5 | + Norte (5) |
+
+### Eventos
+
+Eventos climáticos e de demanda alteram a produção e o consumo de regiões específicas por um tempo. Quanto mais avançada a fase, mais eventos podem acontecer ao mesmo tempo.
+
+Chuvas fortes, Seca severa, Onda de calor, Ventos fortes, Frente fria, Jogo decisivo, Manutenção nuclear, Sol forte e Pico industrial.
+
+### Minigames
+
+| Tipo | Minigame | O que fazer |
 |---|---|---|
-| Sudeste | 50 MW | 1 |
-| Nordeste | 35 MW | 1 |
-| Sul | 30 MW | 1 |
-| Centro-Oeste | 20 MW | 2 |
-| Norte | 25 MW | 3 |
+| Apagão | Fios | Arrastar cada fio da esquerda até a ponta da mesma cor |
+| Apagão | Disjuntores | Clicar nos disjuntores em ordem de 1 a 6 (errar reinicia a sequência) |
+| Apagão | Gerador | Clicar no botão ou apertar `ESPAÇO` rápido até encher 100% |
+| Sobrecarga | Turbinas | Clicar nas turbinas para esfriá-las, sem deixar nenhuma chegar a 100% |
+| Sobrecarga | Sincronia | Parar o marcador na zona verde (`ESPAÇO` ou botão), acertando 3 vezes |
+| Sobrecarga | Alvos | Desligar o disjuntor aceso antes que ele apague, com 8 acertos |
 
-Se o jogador tentar ligar uma região que ultrapassaria a cota, a ação é recusada e o jogo avisa. Uma região em blackout continua no escuro até ser religada, o que exige cota disponível. O blackout já contado não é desfeito.
+O tempo de cada minigame diminui conforme a fase avança. Vencer estabiliza a região e dá pontos. Falhar custa uma vida.
 
-## Funcionalidades Implementadas
+## Pontuação
 
-- Simulação de rede elétrica com cinco regiões e consumo individual por área;
-- Controle de cota de energia por noite, com bloqueio de ligações acima da cota;
-- Estados das regiões: bloqueada, abastecida, em alerta e blackout;
-- Contagem regressiva de alerta antes do blackout, com destaque visual quando restam poucos segundos;
-- Progressão por noites com novas regiões, mais cota e menos tempo de alerta;
-- Pontuação por estabilidade, bônus por noite concluída e penalidade por blackout;
-- Condições de vitória e derrota, com tela final e opção de jogar novamente;
-- Tela de título, painel de status colorido e mensagens de contexto;
-- Seleção de regiões por setas, W/S e atalhos numéricos.
-
-## Em Desenvolvimento
-
-- Minigames de eventos de emergência (guiar um fio por um labirinto de circuitos e conectar cabos), com detecção de colisão;
-- Lista de eventos ativos em tempo real;
-- Labirintos carregados de arquivos em `data/`;
-- Recorde (pontuação máxima) salvo em arquivo.
-
-## Controles
-
-| Tecla | Ação |
+| Fonte | Pontos |
 |---|---|
-| Setas para cima/baixo ou W/S | Navegar entre as regiões |
-| Enter ou Espaço | Ligar/desligar a região selecionada |
-| 1 a 5 | Selecionar a região direto e alternar seu estado |
-| Q | Sair do jogo |
-| R | Jogar novamente (na tela final) |
+| Rede estável (todas as regiões entre 30% e 80%) | `5 × fase × combo` por segundo |
+| Minigame vencido | `100 × fase` |
+| Fim de cada fase | `500 × fase + 200 × vidas restantes` |
 
-O Ctrl+C fica desativado pela biblioteca de terminal. Use **Q** para sair.
+**Combo:** a cada 12 segundos com a rede estável o bônus sobe de x1 até x5. Enquanto alguma região estiver em alerta o combo para de crescer, e cair num minigame zera o bônus de volta para x1.
 
-## Requisitos de Execução
+## Fase Secreta
 
-- Sistema operacional: Linux ou macOS;
-- Compilador: GCC e `make`;
-- Terminal com pelo menos 80x24 caracteres;
-- Windows: usar WSL. Se a virtualização estiver desativada no computador, o WSL 1 funciona sem ela (`wsl --set-default-version 1`, depois `wsl --install -d Ubuntu`). No Ubuntu, instale as ferramentas com `sudo apt install build-essential`.
+Quem termina a fase 5 sem perder nenhuma vida pode jogar a **Fase Secreta**, com o mapa dos **27 estados** do Brasil.
+
+- 5 vidas;
+- 3 dias de 40 segundos;
+- +5000 pontos ao concluir;
+- a conquista fica registrada no menu.
+
+## Ranque
+
+Ao fim de cada partida você digita seu nome e a pontuação entra no **Ranque da fase** (top 10 por fase, com uma aba para a fase secreta). Os recordes ficam salvos no arquivo `ranking_fases.txt` e a conquista secreta em `segredo.txt`, ambos criados na pasta do jogo.
+
+## Requisitos
+
+- Windows 64 bits;
+- Para jogar: `VolTerra.exe`, `libraylib.dll` e `glfw3.dll` na mesma pasta;
+- Para compilar: GCC (MinGW-w64) e a biblioteca raylib instalados.
 
 ## Compilação e Execução
 
 ```bash
-git clone https://github.com/HenriqueCarneiro-dev/VolTerra.git
-cd VolTerra
-make run
+gcc src/main.c -o VolTerra.exe -std=c99 -Wall -lraylib -lopengl32 -lgdi32 -lwinmm -lm
+./VolTerra.exe
 ```
 
-Também é possível compilar e executar separadamente:
+A janela abre em 1280x720 a 60 FPS.
 
-```bash
-make
-./volterra
-```
+### Áudio
 
-Depois de alterar algum arquivo `.h`, use `make clean && make`, porque o Makefile não rastreia headers.
+A música e os efeitos sonoros são **gerados por código**, então o jogo não precisa de nenhum arquivo de som. Se quiser trocar as músicas, coloque arquivos `.wav` com estes nomes em uma pasta `assets/` ao lado do executável:
+
+`musica_menu.wav`, `musica_fase1.wav` a `musica_fase5.wav` e `musica_secreta.wav`.
 
 ## Estrutura do Projeto
 
 ```
 VolTerra/
 ├── Makefile
-├── data/                  reservado para labirintos e recorde
-├── include/
-│   ├── desenho.h
-│   ├── jogo.h
-│   └── regiao.h
-├── lib/                   cli-lib (sem modificações)
+├── README.md
 └── src/
-    ├── desenho.c
-    ├── jogo.c
-    ├── main.c
-    └── regiao.c
+    └── main.c
 ```
 
-- `src/main.c`: loop principal, leitura de teclas (incluindo setas) e controle das telas;
-- `src/jogo.c`: regras do jogo (cota, noites, alertas, blackouts, pontuação);
-- `src/regiao.c`: dados e estados de cada região;
-- `src/desenho.c`: todo o desenho na tela, separado da lógica;
-- `include/`: estruturas e protótipos de cada módulo;
-- `lib/`: biblioteca auxiliar `cli-lib`, usada para tela, teclado e temporizador.
+O `src/main.c` concentra o jogo inteiro, organizado em seções:
 
-A lógica do jogo (`jogo.c` e `regiao.c`) não desenha nada, e o desenho (`desenho.c`) não altera regras. Isso facilita testar e dividir o trabalho.
+| Seção | Conteúdo |
+|---|---|
+| Dados | Regiões, estados, eventos, vizinhança e trilhas musicais |
+| Estado global | Variáveis da partida e botões |
+| Áudio | Síntese de efeitos e composição da música |
+| Ranking | Lista encadeada por fase e leitura/gravação em arquivo |
+| Eventos e Minigames | Sorteio de eventos e os seis minigames |
+| Lógica do jogo | Simulação das baterias, apoio, combo e fases |
+| Desenho | Mapa, cena e todas as telas |
+| Atualização das telas | Entrada do jogador e troca de telas |
 
 ## Requisitos da Disciplina
 
-| Conceito | Situação | Onde |
-|---|---|---|
-| Structs | Implementado | `Regiao` (`include/regiao.h`) e `EstadoJogo` (`include/jogo.h`) |
-| Ponteiros | Implementado | Funções como `regiaoLigar(Regiao *r)` e `jogoAlternar(EstadoJogo *j)` recebem ponteiros para as estruturas |
-| Alocação dinâmica | Implementado | `calloc` do `EstadoJogo` e `malloc` do vetor de regiões em `jogoCriar` (`src/jogo.c`), com `free` em `jogoDestruir` |
-| Vetores | Implementado | Vetor de regiões indexado por posição |
-| Matrizes | Previsto | Mapa do labirinto de circuitos nos minigames |
-| Listas encadeadas | Previsto | Lista de eventos de emergência ativos |
-| Arquivos | Previsto | Leitura dos labirintos e gravação do recorde em `data/` |
-| Detecção de colisão | Previsto | Fio contra a parede do labirinto |
+| Conceito | Onde |
+|---|---|
+| Structs | `Regiao`, `Estado`, `EvDef`, `EvAtivo`, `Minigame`, `Trilha` e `No` |
+| Ponteiros | `Regiao *g`, `Estado *e` e `No *prox` percorridos nas simulações e no ranking |
+| Alocação dinâmica | `malloc` dos nós do ranking e `calloc`/`malloc` dos buffers de áudio, com `free` correspondente |
+| Vetores | `r[N]` (regiões), `est[NE]` (estados) e `evs[MAX_EV]` (eventos ativos) |
+| Matrizes | `vizinho[N][N]` (fronteiras entre regiões) e `gridEst[GH][GW]` (mapa dos estados) |
+| Listas encadeadas | `rankingLista[]`, uma lista de `No` por fase, ordenada por pontuação |
+| Arquivos | Leitura e gravação de `ranking_fases.txt` e `segredo.txt` |
 
 ## Vídeo de Demonstração
 
@@ -144,4 +166,4 @@ Projeto desenvolvido na disciplina de Programação Imperativa e Funcional 2026.
 
 ## Créditos
 
-O projeto utiliza a biblioteca [cli-lib](https://github.com/tgfb/cli-lib), distribuída sob a licença BSD-3-Clause, mantida em `lib/` sem modificações no código-fonte original.
+Feito com [raylib](https://www.raylib.com/), biblioteca de jogos em C distribuída sob a licença zlib.

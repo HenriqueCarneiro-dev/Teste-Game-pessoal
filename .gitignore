@@ -1,0 +1,21 @@
+# Binários compilados
+*.exe
+*.o
+*.obj
+*.out
+
+# Bibliotecas (distribuir pelo GitHub Releases, não pelo código)
+*.dll
+*.a
+*.lib
+
+# Arquivos gerados pelo jogo ao rodar
+ranking_fases.txt
+segredo.txt
+
+# Editores e sistema
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
