@@ -1,18 +1,15 @@
-CC     = gcc
-CFLAGS = -Wall -std=c99 -O2
-LIBS   = -lraylib -lopengl32 -lgdi32 -lwinmm -lm
-TARGET = VolTerra.exe
-SRC    = src/main.c
+CC      = gcc
+CFLAGS  = -Wall -std=c99
+LIBS    = -lraylib -lopengl32 -lgdi32 -lwinmm -lm
 
-all: $(TARGET)
+SRC = $(wildcard src/*.c)
+HDR = $(wildcard src/*.h)
 
-$(TARGET): $(SRC)
-	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)
+volterra.exe: $(SRC) $(HDR)
+	$(CC) $(SRC) -o volterra.exe $(CFLAGS) $(LIBS)
 
-run: $(TARGET)
-	./$(TARGET)
+run: volterra.exe
+	./volterra.exe
 
 clean:
-	rm -f $(TARGET)
-
-.PHONY: all run clean
+	rm -f volterra.exe
