@@ -446,7 +446,7 @@ static void desenharFim(void)
     if (podeSecreta) {
         float p = 0.5f + 0.5f * sinf((float)GetTime() * 4.0f);
         DrawRectangleRoundedLines((Rectangle){btnSecreta.x - 6, btnSecreta.y - 6, btnSecreta.width + 12, btnSecreta.height + 12},
-                                  0.3f, 8, 2.0f, Fade((Color){255, 215, 60, 255}, 0.4f + 0.6f * p));
+                                  0.3f, 8, Fade((Color){255, 215, 60, 255}, 0.4f + 0.6f * p));
         desenharBotao(btnSecreta, "Fase secreta", (Color){150, 110, 20, 255});
     }
 }
@@ -517,7 +517,7 @@ static void desenharEngrenagem(void)
     );
 
     DrawRectangleRoundedLines(
-        rc, 0.25f, 8, 2.0f,
+        rc, 0.25f, 8,
         h ? WHITE : (Color){100, 130, 170, 255}
     );
 
